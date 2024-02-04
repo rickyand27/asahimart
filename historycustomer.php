@@ -65,15 +65,12 @@ require 'ceklogin.php';
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
-          <h1 class="mt-4"><i class="fas fa-user-alt"></i> Customer</h1>
+          <h1 class="mt-4"><i class="fas fa-user-alt"></i> History Customer</h1>
           <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active">Menu untuk mengelola customer</li>
+            <li class="breadcrumb-item active">Menu untuk mengelola customer yang telah dihapus</li>
           </ol>
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addCust">
-            <i class="fas fa-plus"></i> Tambah Customer Baru
-          </button>
-          <a href="historycustomer.php" class="btn btn-primary mb-4"><i class="fa fa-clock"></i> Riwayat</a>
+
+          <a href="customer.php" class="btn btn-primary mb-4"><i class="fa fa-arrow-left"></i> Back</a>
 
           <div class="card mb-4">
             <div class="card-header">
@@ -89,7 +86,7 @@ require 'ceklogin.php';
                     <th>No Telepon</th>
                     <th>Alamat</th>
                     <th>Dibuat</th>
-                    <th>Terakhir Diubah</th>
+                    <th>Dihapus</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
@@ -97,7 +94,7 @@ require 'ceklogin.php';
                 <tbody>
 
                   <?php
-                  $get = mysqli_query($conn, "SELECT * FROM customer WHERE deleted_at IS NULL");
+                  $get = mysqli_query($conn, "SELECT * FROM customer WHERE deleted_at IS NOT NULL");
                   $i = 1;
                   while ($p = mysqli_fetch_array($get)) {
                     $idcust = $p['idcustomer'];
@@ -106,6 +103,7 @@ require 'ceklogin.php';
                     $alamat = $p['address'];
                     $create = $p['created_at'];
                     $update = $p['updated_at'];
+                    $delete = $p['deleted_at'];
                   ?>
                     <tr>
                       <td><?= $i++; ?></td>
@@ -113,49 +111,18 @@ require 'ceklogin.php';
                       <td><?= $notelp; ?></td>
                       <td><?= $alamat; ?></td>
                       <td><?= $create; ?></td>
-                      <td><?= $update; ?></td>
+                      <td><?= $delete; ?></td>
                       <td>
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit<?= $idcust; ?>">
-                          <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idcust; ?>">
-                          <i class="fas fa-trash"></i> Delete
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#restore<?= $idcust; ?>">
+                          <i class="fas fa-trash-restore-alt"></i> Restore
                         </button>
                       </td>
                     </tr>
 
-                    <!-- Modal untuk edit -->
-                    <div class="modal fade" id="edit<?= $idcust; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
 
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Ubah Customer</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                          </div>
 
-                          <form method="post">
-                            <div class="modal-body">
-                              <input type="text" name="namacustomer" class="form-control" placeholder="Nama Customer" value="<?= $nc; ?>" required>
-                              <input type="text" name="notelp" class="form-control mt-2" placeholder="No Telepon" value="<?= $notelp; ?>" required>
-                              <input type="text" name="alamat" class="form-control  mt-2" placeholder="Alamat" value="<?= $alamat; ?>" required>
-                              <input type="hidden" name="idcustomer" value="<?= $idcust; ?>">
-                            </div>
-
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-success" name="ubahcustomer">Submit</button>
-                            </div>
-
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Modal untuk hapus-->
-                    <div class="modal fade" id="delete<?= $idcust; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <!-- Modal untuk restore-->
+                    <div class="modal fade" id="restore<?= $idcust; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
 
@@ -169,13 +136,13 @@ require 'ceklogin.php';
                           <form method="post">
 
                             <div class="modal-body">
-                              Apakah Anda yakin ingin menghapus customer ini ?
+                              Apakah Anda yakin ingin mengembalikan customer ini ?
                               <input type="hidden" name="idcustomer" value="<?= $idcust; ?>">
                             </div>
 
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-success" name="hapuscustomer">Ya</button>
+                              <button type="submit" class="btn btn-success" name="restorecustomer">Ya</button>
                             </div>
 
                           </form>
@@ -217,33 +184,6 @@ require 'ceklogin.php';
   <!-- Bootstrap JS -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
-<!-- Modal -->
-<div class="modal fade" id="addCust" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Tambah Customer Baru</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <form method="post">
-        <div class="modal-body">
-          <input type="text" name="namacustomer" class="form-control" placeholder="Nama Customer" required>
-          <input type="text" name="notelp" class="form-control mt-2" placeholder="No Telepon" required>
-          <input type="text" name="alamat" class="form-control  mt-2" placeholder="Alamat" required>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-success" name="tambahcustomer">Submit</button>
-        </div>
-
-      </form>
-    </div>
-  </div>
-</div>
 
 </html>

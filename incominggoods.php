@@ -40,23 +40,23 @@ require 'ceklogin.php';
             <div class="sb-sidenav-menu-heading">Menu</div>
 
             <a class="nav-link" href="order.php">
-              <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-scroll"></i></i></div>
               Order
             </a>
             <a class="nav-link" href="product.php">
-              <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-dice-d6"></i></div>
               Product
             </a>
             <a class="nav-link" href="customer.php">
-              <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
               Customer
             </a>
             <a class="nav-link" href="incominggoods.php">
-              <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-truck"></i></div>
               Incoming Goods
             </a>
             <a class="nav-link" href="logout.php">
-              <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+              <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
               Logout
             </a>
           </div>
@@ -66,14 +66,16 @@ require 'ceklogin.php';
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
-          <h1 class="mt-4">Incoming Goods</h1>
+          <h1 class="mt-4"><i class=" fas fa-truck"></i> Incoming Goods</h1>
           <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active">Menu untuk menambahkan barang masuk</li>
           </ol>
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addInc">
-            Tambah Barang Masuk
+            <i class="fas fa-plus"></i> Tambah Barang Masuk
           </button>
+          <a href="historyig.php" class="btn btn-primary mb-4"><i class="fa fa-clock"></i> Riwayat</a>
+
 
           <div class="card mb-4">
             <div class="card-header">
@@ -87,7 +89,8 @@ require 'ceklogin.php';
                     <th>No</th>
                     <th>Nama Produk</th>
                     <th>Qty</th>
-                    <th>Tanggal Masuk</th>
+                    <th>Dibuat</th>
+                    <th>Terakhir Diubah</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
@@ -95,27 +98,29 @@ require 'ceklogin.php';
                 <tbody>
 
                   <?php
-                  $get = mysqli_query($conn, "SELECT * FROM incominggoods i, product p WHERE i.idproduct = p.idproduct");
+                  $get = mysqli_query($conn, "SELECT * FROM incominggoods i, product p WHERE i.idproduct = p.idproduct AND i.deleted_at IS NULL");
                   $i = 1;
                   while ($p = mysqli_fetch_array($get)) {
                     $np = $p['productname'];
                     $desc = $p['description'];
                     $qty = $p['qty'];
-                    $tanggal = $p['dateinc'];
                     $idinc = $p['idinc'];
                     $idp = $p['idproduct'];
+                    $create = $p['created_at'];
+                    $update = $p['updated_at'];
 
                   ?>
                     <tr>
                       <td><?= $i++; ?></td>
                       <td><?= $np; ?> - <?= $desc; ?></td>
                       <td><?= number_format($qty); ?></td>
-                      <td><?= $tanggal; ?></td>
+                      <td><?= $create; ?></td>
+                      <td><?= $update; ?></td>
                       <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit<?= $idinc; ?>">
-                          Edit
+                          <i class="fas fa-edit"></i> Edit
                         </button>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idinc; ?>">
-                          Delete
+                          <i class="fas fa-trash"></i> Delete
                         </button>
                       </td>
                     </tr>

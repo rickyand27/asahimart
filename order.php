@@ -40,23 +40,23 @@ require 'ceklogin.php';
                         <div class="sb-sidenav-menu-heading">Menu</div>
 
                         <a class="nav-link" href="order.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-scroll"></i></i></div>
                             Order
                         </a>
                         <a class="nav-link" href="product.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-dice-d6"></i></div>
                             Product
                         </a>
                         <a class="nav-link" href="customer.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
                             Customer
                         </a>
                         <a class="nav-link" href="incominggoods.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            <div class="sb-nav-link-icon"><i class="	fas fa-truck"></i></div>
                             Incoming Goods
                         </a>
                         <a class="nav-link" href="logout.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
                             Logout
                         </a>
                     </div>
@@ -66,14 +66,15 @@ require 'ceklogin.php';
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Order</h1>
+                    <h1 class="mt-4"><i class="fas fa-dice-d6"></i> Order</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item active">Menu untuk melakukan transaksi</li>
                     </ol>
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addOrder">
-                        Tambah Order Baru
+                    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addOrder"><i class="fas fa-plus"></i> Tambah Order Baru
                     </button>
+
+                    <a href="historyorder.php" class="btn btn-primary mb-4"><i class="fa fa-clock"></i> Riwayat</a>
 
                     <div class="card mb-4">
                         <div class="card-header">
@@ -85,9 +86,10 @@ require 'ceklogin.php';
                                 <thead>
                                     <tr>
                                         <th>ID Pesanan</th>
-                                        <th>Tanggal</th>
                                         <th>Nama Pelanggan</th>
                                         <th>Jumlah</th>
+                                        <th>Dibuat</th>
+                                        <th>Terakhir Diubah</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -95,13 +97,14 @@ require 'ceklogin.php';
                                 <tbody>
 
                                     <?php
-                                    $get = mysqli_query($conn, "SELECT * FROM orders o, customer c WHERE o.idcustomer = c.idcustomer");
+                                    $get = mysqli_query($conn, "SELECT * FROM orders o, customer c WHERE o.idcustomer = c.idcustomer AND o.deleted_at IS NULL");
                                     while ($o = mysqli_fetch_array($get)) {
                                         $idorder = $o['idorder'];
-                                        $tglorder = $o['dateorder'];
                                         $idcust = $o['idcustomer'];
                                         $nc = $o['customername'];
                                         $alamat = $o['address'];
+                                        $create = $o['created_at'];
+                                        $update = $o['updated_at'];
 
                                         //hitung jumlah
                                         $hitungjumlah = mysqli_query($conn, "SELECT * FROM detailorder WHERE idorder='$idorder'");
@@ -110,12 +113,13 @@ require 'ceklogin.php';
                                     ?>
                                         <tr>
                                             <td><?= $idorder; ?></td>
-                                            <td><?= $tglorder; ?></td>
                                             <td><?= $nc; ?> - <?= $alamat; ?></td>
                                             <td><?= $jumlah; ?></td>
+                                            <td><?= $create; ?></td>
+                                            <td><?= $update; ?></td>
                                             <td>
-                                                <a href="view.php?ido=<?= $idorder; ?>" class="btn btn-primary">Tampilkan</a>
-                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idorder; ?>">
+                                                <a href="view.php?ido=<?= $idorder; ?>" class="btn btn-primary"><i class="fas fa-eye"></i> Tampilkan</a>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idorder; ?>"><i class="fas fa-trash"></i>
                                                     Delete
                                                 </button>
 
@@ -205,7 +209,7 @@ require 'ceklogin.php';
                     <select name="idcustomer" class="form-control">
 
                         <?php
-                        $get = mysqli_query($conn, "SELECT * FROM customer");
+                        $get = mysqli_query($conn, "SELECT * FROM customer WHERE deleted_at IS NULL");
 
                         while ($cs = mysqli_fetch_array($get)) {
                             $idcust = $cs['idcustomer'];

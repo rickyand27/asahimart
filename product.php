@@ -40,23 +40,23 @@ require 'ceklogin.php';
                         <div class="sb-sidenav-menu-heading">Menu</div>
 
                         <a class="nav-link" href="order.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-scroll"></i></i></div>
                             Order
                         </a>
                         <a class="nav-link" href="product.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-dice-d6"></i></div>
                             Product
                         </a>
                         <a class="nav-link" href="customer.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
                             Customer
                         </a>
                         <a class="nav-link" href="incominggoods.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            <div class="sb-nav-link-icon"><i class="	fas fa-truck"></i></div>
                             Incoming Goods
                         </a>
                         <a class="nav-link" href="logout.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
                             Logout
                         </a>
                     </div>
@@ -66,14 +66,14 @@ require 'ceklogin.php';
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Product</h1>
+                    <h1 class="mt-4"><i class="fas fa-dice-d6"></i> Product</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item active">Menu untuk mengelola barang</li>
                     </ol>
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addProduct">
-                        Tambah Product Baru
+                    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addProduct"><i class="fas fa-plus"></i> Tambah Product Baru
                     </button>
+                    <a href="historyproduct.php" class="btn btn-primary mb-4"><i class="fa fa-clock"></i> Riwayat</a>
 
                     <div class="card mb-4">
                         <div class="card-header">
@@ -89,6 +89,8 @@ require 'ceklogin.php';
                                         <th>Deskripsi</th>
                                         <th>Stock</th>
                                         <th>Harga</th>
+                                        <th>Dibuat</th>
+                                        <th>Terakhir Diubah</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -96,7 +98,7 @@ require 'ceklogin.php';
                                 <tbody>
 
                                     <?php
-                                    $get = mysqli_query($conn, "SELECT * FROM product");
+                                    $get = mysqli_query($conn, "SELECT * FROM product WHERE deleted_at IS NULL");
                                     $i = 1;
                                     while ($p = mysqli_fetch_array($get)) {
                                         $np = $p['productname'];
@@ -104,6 +106,8 @@ require 'ceklogin.php';
                                         $stock = $p['stock'];
                                         $price = $p['price'];
                                         $idp = $p['idproduct'];
+                                        $create = $p['created_at'];
+                                        $update = $p['updated_at'];
                                     ?>
                                         <tr>
                                             <td><?= $i++; ?></td>
@@ -111,12 +115,12 @@ require 'ceklogin.php';
                                             <td><?= $desc; ?></td>
                                             <td><?= number_format($stock); ?></td>
                                             <td>Rp <?= number_format($price); ?></td>
+                                            <td><?= $create; ?></td>
+                                            <td><?= $update; ?></td>
                                             <td>
-                                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit<?= $idp; ?>">
-                                                    Edit
+                                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit<?= $idp; ?>"><i class="fas fa-edit"></i> Edit
                                                 </button>
-                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idp; ?>">
-                                                    Delete
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idp; ?>"><i class="fas fa-trash"></i> Delete
                                                 </button>
                                             </td>
                                         </tr>

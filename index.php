@@ -31,7 +31,7 @@ require 'ceklogin.php';
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Dashboard</h1>
+                    <h1 class="mt-4"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
                     <h4 class="mt-4 text-secondary">Selamat Datang di Aplikasi Kasir Sederhana Asahimart.</h4>
                     <h4 class="mb-4 text-secondary">Silahkan pilih menu yang diinginkan.</h4>
 

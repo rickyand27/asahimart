@@ -2,6 +2,7 @@
 require 'ceklogin.php';
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +12,7 @@ require 'ceklogin.php';
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="description" content="" />
   <meta name="author" content="" />
-  <title>Customer</title>
+  <title>Order</title>
   <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
   <link href="css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -65,15 +66,13 @@ require 'ceklogin.php';
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
-          <h1 class="mt-4"><i class="fas fa-user-alt"></i> Customer</h1>
+          <h1 class="mt-4">History Order</h1>
           <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active">Menu untuk mengelola customer</li>
+            <li class="breadcrumb-item active">Menu untuk melihat transaksi yang dihapus</li>
           </ol>
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#addCust">
-            <i class="fas fa-plus"></i> Tambah Customer Baru
-          </button>
-          <a href="historycustomer.php" class="btn btn-primary mb-4"><i class="fa fa-clock"></i> Riwayat</a>
+
+          <a href="order.php" class="btn btn-primary mb-4"><i class="fa fa-arrow-left"></i> Back</a>
+
 
           <div class="card mb-4">
             <div class="card-header">
@@ -84,12 +83,11 @@ require 'ceklogin.php';
               <table id="datatablesSimple">
                 <thead>
                   <tr>
-                    <th>No</th>
-                    <th>Nama Customer</th>
-                    <th>No Telepon</th>
-                    <th>Alamat</th>
+                    <th>ID Pesanan</th>
+                    <th>Nama Pelanggan</th>
+                    <th>Jumlah</th>
                     <th>Dibuat</th>
-                    <th>Terakhir Diubah</th>
+                    <th>Dihapus</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
@@ -97,65 +95,37 @@ require 'ceklogin.php';
                 <tbody>
 
                   <?php
-                  $get = mysqli_query($conn, "SELECT * FROM customer WHERE deleted_at IS NULL");
-                  $i = 1;
-                  while ($p = mysqli_fetch_array($get)) {
-                    $idcust = $p['idcustomer'];
-                    $nc = $p['customername'];
-                    $notelp = $p['phonenumber'];
-                    $alamat = $p['address'];
-                    $create = $p['created_at'];
-                    $update = $p['updated_at'];
+                  $get = mysqli_query($conn, "SELECT *, o.deleted_at FROM orders o, customer c WHERE o.idcustomer = c.idcustomer AND o.deleted_at IS NOT NULL");
+                  while ($o = mysqli_fetch_array($get)) {
+                    $idorder = $o['idorder'];
+                    $idcust = $o['idcustomer'];
+                    $nc = $o['customername'];
+                    $alamat = $o['address'];
+                    $create = $o['created_at'];
+                    $update = $o['updated_at'];
+                    $delete = $o['deleted_at'];
+
+                    //hitung jumlah
+                    $hitungjumlah = mysqli_query($conn, "SELECT * FROM detailorder WHERE idorder='$idorder'");
+                    $jumlah = mysqli_num_rows($hitungjumlah);
+
                   ?>
                     <tr>
-                      <td><?= $i++; ?></td>
-                      <td><?= $nc; ?></td>
-                      <td><?= $notelp; ?></td>
-                      <td><?= $alamat; ?></td>
+                      <td><?= $idorder; ?></td>
+                      <td><?= $nc; ?> - <?= $alamat; ?></td>
+                      <td><?= $jumlah; ?></td>
                       <td><?= $create; ?></td>
-                      <td><?= $update; ?></td>
+                      <td><?= $delete; ?></td>
                       <td>
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit<?= $idcust; ?>">
-                          <i class="fas fa-edit"></i> Edit
+                        <a href="historyview.php?ido=<?= $idorder; ?>" class="btn btn-primary"><i class="fas fa-eye"></i> Tampilkan</a>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#restore<?= $idorder; ?>"><i class="fas fa-trash-restore-alt"></i> Restore
                         </button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?= $idcust; ?>">
-                          <i class="fas fa-trash"></i> Delete
-                        </button>
+
                       </td>
                     </tr>
 
-                    <!-- Modal untuk edit -->
-                    <div class="modal fade" id="edit<?= $idcust; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Ubah Customer</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                          </div>
-
-                          <form method="post">
-                            <div class="modal-body">
-                              <input type="text" name="namacustomer" class="form-control" placeholder="Nama Customer" value="<?= $nc; ?>" required>
-                              <input type="text" name="notelp" class="form-control mt-2" placeholder="No Telepon" value="<?= $notelp; ?>" required>
-                              <input type="text" name="alamat" class="form-control  mt-2" placeholder="Alamat" value="<?= $alamat; ?>" required>
-                              <input type="hidden" name="idcustomer" value="<?= $idcust; ?>">
-                            </div>
-
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-success" name="ubahcustomer">Submit</button>
-                            </div>
-
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
                     <!-- Modal untuk hapus-->
-                    <div class="modal fade" id="delete<?= $idcust; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal fade" id="restore<?= $idorder; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
 
@@ -169,19 +139,20 @@ require 'ceklogin.php';
                           <form method="post">
 
                             <div class="modal-body">
-                              Apakah Anda yakin ingin menghapus customer ini ?
-                              <input type="hidden" name="idcustomer" value="<?= $idcust; ?>">
+                              Apakah Anda yakin ingin mengembalikan order ini ?
+                              <input type="hidden" name="idorder" value="<?= $idorder; ?>">
                             </div>
 
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-success" name="hapuscustomer">Ya</button>
+                              <button type="submit" class="btn btn-success" name="restoreorder">Ya</button>
                             </div>
 
                           </form>
                         </div>
                       </div>
                     </div>
+
 
                   <?php
                   }; //end of while
@@ -218,27 +189,41 @@ require 'ceklogin.php';
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 <!-- Modal -->
-<div class="modal fade" id="addCust" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="addOrder" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Tambah Customer Baru</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Tambah Order Baru</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
       <form method="post">
+
         <div class="modal-body">
-          <input type="text" name="namacustomer" class="form-control" placeholder="Nama Customer" required>
-          <input type="text" name="notelp" class="form-control mt-2" placeholder="No Telepon" required>
-          <input type="text" name="alamat" class="form-control  mt-2" placeholder="Alamat" required>
+          Pilih Customer
+          <select name="idcustomer" class="form-control">
+
+            <?php
+            $get = mysqli_query($conn, "SELECT * FROM customer WHERE deleted_at IS NULL");
+
+            while ($cs = mysqli_fetch_array($get)) {
+              $idcust = $cs['idcustomer'];
+              $nc = $cs['custome
+                            rname'];
+              $alamat = $cs['address'];
+
+            ?>
+              <option value="<?= $idcust; ?>"><?= $nc; ?> - <?= $alamat; ?></option>
+            <?php } ?>
+          </select>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-success" name="tambahcustomer">Submit</button>
+          <button type="submit" class="btn btn-success" name="tambahorder">Submit</button>
         </div>
 
       </form>
